@@ -40,6 +40,10 @@ class BigdftPsolver(AutotoolsPackage, CudaPackage):
     for vers in ["1.9.0", "1.9.1", "1.9.2", "1.9.3", "develop"]:
         depends_on("bigdft-futile@{0}".format(vers), when="@{0}".format(vers))
         depends_on("bigdft-atlab@{0}".format(vers), when="@{0}".format(vers))
+        
+    for vers in ["1.8.3"]:
+        depends_on("bigdft-futile@{0}".format(vers), when="@{0}".format(vers))
+    
 
     configure_directory = "psolver"
 
@@ -64,12 +68,16 @@ class BigdftPsolver(AutotoolsPackage, CudaPackage):
             "FCFLAGS=%s" % " ".join(openmp_flag),
             "--with-ext-linalg=%s" % " ".join(linalg),
             "--with-pyyaml-path=%s" % pyyaml,
-            "--with-futile-libs=%s" % spec["bigdft-futile"].libs.ld_flags,
-            "--with-futile-incs=%s" % spec["bigdft-futile"].headers.include_flags,
             "--with-moduledir=%s" % prefix.include,
             "--prefix=%s" % prefix,
             "--without-etsf-io",
         ]
+        if "+bigdft-futile" in spec:
+            args.append(
+                [
+                    "--with-futile-libs=%s" % spec["bigdft-futile"].libs.ld_flags,
+                    "--with-futile-incs=%s" % spec["bigdft-futile"].headers.include_flags
+                    ])
 
         if "+mpi" in spec:
             args.append("CC=%s" % spec["mpi"].mpicc)
@@ -85,7 +93,11 @@ class BigdftPsolver(AutotoolsPackage, CudaPackage):
         else:
             args.append("--without-openmp")
 
-        args.append("--with-atlab-libs=%s" % spec["bigdft-atlab"].prefix.lib)
+        if "+bigdft-atlab" in spec:
+            args.append([
+                "--with-atlab-libs=%s" % spec["bigdft-atlab"].prefix.lib,
+                "--with-atlab-incs=-I%s" % spec["bigdft-atlab"].prefix.include
+            ])
 
         if "+cuda" in spec:
             args.append("--enable-cuda-gpu")

@@ -54,7 +54,7 @@ class BigdftFutile(AutotoolsPackage, CudaPackage):
             openmp_flag.append(self.compiler.openmp_flag)
 
         args = [
-            "FCFLAGS=%s" % " ".join(openmp_flag),
+            "FCFLAGS=%s" % " ".join(openmp_flag) +"-fallow-argument-mismatch",
             "--with-ext-linalg=%s" % " ".join(linalg),
             "--with-yaml-path=%s" % spec["libyaml"].prefix,
             "--with-pyyaml-path=%s" % pyyaml,
