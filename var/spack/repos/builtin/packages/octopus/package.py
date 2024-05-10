@@ -11,7 +11,7 @@ import llnl.util.tty as tty
 from spack.package import *
 
 
-class Octopus(AutotoolsPackage, CudaPackage):
+class Octopus(AutotoolsPackage, CudaPackage, CMakePackage):
     """A real-space finite-difference (time-dependent) density-functional
     theory code."""
 
@@ -43,7 +43,11 @@ class Octopus(AutotoolsPackage, CudaPackage):
     version("5.0.1", sha256="3423049729e03f25512b1b315d9d62691cd0a6bd2722c7373a61d51bfbee14e0")
 
     version("develop", branch="main")
-
+    build_system(
+        conditional("cmake", when="@14:"),
+        conditional("autotools", when="@:14"),
+        default="autotools",
+    )
     variant("mpi", default=True, description="Build with MPI support")
     variant("scalapack", default=False, when="+mpi", description="Compile with Scalapack")
     variant("berkeleygw", default=False, description="Compile with BerkeleyGW")
@@ -81,11 +85,14 @@ class Octopus(AutotoolsPackage, CudaPackage):
     )
     variant("debug", default=False, description="Compile with debug flags")
 
-    depends_on("autoconf", type="build", when="@develop")
-    depends_on("automake", type="build", when="@develop")
-    depends_on("libtool", type="build", when="@develop")
-    depends_on("m4", type="build", when="@develop")
-    depends_on("mpi", when="+mpi")
+    with when("build_system=autotools"):
+        depends_on("autoconf", type="build", when="@develop")
+        depends_on("automake", type="build", when="@develop")
+        depends_on("libtool", type="build", when="@develop")
+        depends_on("m4", type="build", when="@develop")
+        depends_on("mpi", when="+mpi")
+    with when("build_system=cmake"):
+        depends_on("cmake@3.26:", type="build")
 
     depends_on("blas")
     depends_on("gsl@1.9:")
@@ -411,3 +418,5 @@ class Octopus(AutotoolsPackage, CudaPackage):
                 purpose=purpose,
                 skip_missing=False,
             )
+
+# Class for compiling octopus with cmake and cuda
