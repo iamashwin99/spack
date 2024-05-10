@@ -92,9 +92,9 @@ class Octopus(AutotoolsPackage, CudaPackage, CMakePackage):
         depends_on("m4", type="build", when="@develop")
         depends_on("mpi", when="+mpi")
     with when("build_system=cmake"):
-        variant("ninja", default=False, description="Build with Ninja")
         depends_on("cmake@3.26:", type="build")
-        depends_on("ninja", type="build", when="+ninja")
+        depends_on("ninja", type="build")
+        generator("ninja")
 
     depends_on("blas")
     depends_on("gsl@1.9:")
@@ -138,6 +138,7 @@ class Octopus(AutotoolsPackage, CudaPackage, CMakePackage):
     depends_on("py-numpy", when="+python")
     depends_on("py-mpi4py", when="+python")
     depends_on("metis@5:+int64", when="+metis")
+    depends_on("metis@5:+int64", when="build_system=cmake")
     depends_on("parmetis+int64", when="+parmetis")
     depends_on("scalapack", when="+scalapack")
     depends_on("sparskit", when="+sparskit")
@@ -326,8 +327,6 @@ class Octopus(AutotoolsPackage, CudaPackage, CMakePackage):
     def cmake_args(self):   
         # CMake was introduced in octopus 14 onwards
 
-        if "+ninja" in self.spec:
-            generator("ninja")
         args = [
             self.define("OCTOPUS_OpenMP", True),
             self.define_from_variant("OCTOPUS_MPI", "mpi"),
