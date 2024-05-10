@@ -329,7 +329,7 @@ class Octopus(AutotoolsPackage, CudaPackage, CMakePackage):
         if "+ninja" in self.spec:
             generator("ninja")
         args = [
-            self.define_from_variant("OCTOPUS_OpenMP", "openmp"),
+            self.define("OCTOPUS_OpenMP", True),
             self.define_from_variant("OCTOPUS_MPI", "mpi"),
         ]
         
