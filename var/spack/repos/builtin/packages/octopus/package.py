@@ -92,7 +92,9 @@ class Octopus(AutotoolsPackage, CudaPackage, CMakePackage):
         depends_on("m4", type="build", when="@develop")
         depends_on("mpi", when="+mpi")
     with when("build_system=cmake"):
+        variant("ninja", default=False, description="Build with Ninja")
         depends_on("cmake@3.26:", type="build")
+        depends_on("ninja", type="build", when="+ninja")
 
     depends_on("blas")
     depends_on("gsl@1.9:")
@@ -320,6 +322,7 @@ class Octopus(AutotoolsPackage, CudaPackage, CMakePackage):
         args.append("--disable-gdlib")
 
         return args
+    
 
     @run_after("install")
     @on_package_attributes(run_tests=True)
