@@ -324,14 +324,14 @@ class Octopus(AutotoolsPackage, CudaPackage, CMakePackage):
 
         return args
 
-    def cmake_args(self):   
+    def cmake_args(self):
         # CMake was introduced in octopus 14 onwards
 
         args = [
             self.define("OCTOPUS_OpenMP", True),
             self.define_from_variant("OCTOPUS_MPI", "mpi"),
         ]
-        
+
         return args
 
     @run_after("install")
@@ -431,5 +431,3 @@ class Octopus(AutotoolsPackage, CudaPackage, CMakePackage):
                 purpose=purpose,
                 skip_missing=False,
             )
-
-# Class for compiling octopus with cmake and cuda
