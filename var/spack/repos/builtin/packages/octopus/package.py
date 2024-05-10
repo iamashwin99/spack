@@ -322,7 +322,18 @@ class Octopus(AutotoolsPackage, CudaPackage, CMakePackage):
         args.append("--disable-gdlib")
 
         return args
-    
+
+    def cmake_args(self):   
+        # CMake was introduced in octopus 14 onwards
+
+        if "+ninja" in self.spec:
+            generator("ninja")
+        args = [
+            self.define_from_variant("OCTOPUS_OpenMP", "openmp"),
+            self.define_from_variant("OCTOPUS_MPI", "mpi"),
+        ]
+        
+        return args
 
     @run_after("install")
     @on_package_attributes(run_tests=True)
